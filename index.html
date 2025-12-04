@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="UNO Kartenspiel - Multiplayer Browser Game mit Weihnachtsthema">
+  <title>UNO ft. RDL</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- Startbildschirm -->
+    <main id="start-screen">
+      <h1>UNO</h1>
+
+      <form class="players-inputs" onsubmit="return false;">
+          <label for="p1" class="visually-hidden">Spieler 1 Name</label>
+          <input type="text" id="p1" placeholder="Spieler 1" required aria-label="Name für Spieler 1">
+
+          <label for="p2" class="visually-hidden">Spieler 2 Name</label>
+          <input type="text" id="p2" placeholder="Spieler 2" required aria-label="Name für Spieler 2">
+
+          <label for="p3" class="visually-hidden">Spieler 3 Name</label>
+          <input type="text" id="p3" placeholder="Spieler 3" required aria-label="Name für Spieler 3">
+
+          <label for="p4" class="visually-hidden">Spieler 4 Name</label>
+          <input type="text" id="p4" placeholder="Spieler 4" required aria-label="Name für Spieler 4">
+      </form>
+
+
+      <div class="controls">
+        <button id="start-btn" aria-label="Spiel starten">Spiel starten</button>
+      </div>
+
+      <a id="rules-link" href="https://www.uno-kartenspiel.de/spielregeln/"
+          target="_blank" rel="noopener" aria-label="Spielregeln in neuem Tab öffnen">Spielregeln</a>
+
+    </main>
+
+     <!-- Der GESAMTE SCREEN während des Games -->
+    <div id="game-screen" style="display: none;" role="main">
+
+         <a id="rules-btn"
+         href="https://www.uno-kartenspiel.de/spielregeln/"
+         target="_blank"
+         rel="noopener"
+         title="Regeln"
+         aria-label="Spielregeln in neuem Tab öffnen">Regeln</a>
+
+        <!-- Das SPIELFELD/ Das Spiel Brett-->
+        <div id="board" role="region" aria-label="Spielfeld">
+
+          <!-- Die SPIELER -->
+          <section class="player" id="player1" aria-label="Spieler 1 Bereich">
+            <div class="info"><img class="avatar" alt="Spieler Avatar" role="img"> <span class="name"></span> · <span class="score">0</span></div>
+            <div class="hand" role="list" aria-label="Karten in der Hand"></div>
+          </section>
+
+          <section class="player" id="player2" aria-label="Spieler 2 Bereich">
+            <div class="info"><img class="avatar" alt="Spieler Avatar" role="img"> <span class="name"></span> · <span class="score">0</span></div>
+            <div class="hand" role="list" aria-label="Karten in der Hand"></div>
+          </section>
+
+          <section class="player" id="player3" aria-label="Spieler 3 Bereich">
+            <div class="info"><img class="avatar" alt="Spieler Avatar" role="img"> <span class="name"></span> · <span class="score">0</span></div>
+            <div class="hand" role="list" aria-label="Karten in der Hand"></div>
+          </section>
+
+          <section class="player" id="player4" aria-label="Spieler 4 Bereich">
+            <div class="info"><img class="avatar" alt="Spieler Avatar" role="img"> <span class="name"></span> · <span class="score">0</span></div>
+            <div class="hand" role="list" aria-label="Karten in der Hand"></div>
+          </section>
+
+          <!-- Stapel-Zone in der MITTE -->
+          <!-- Cards, draw pile, discard pile -->
+          <div id="center-area" role="region" aria-label="Kartenstapel">
+            <button id="draw-pile" class="pile" title="Karte ziehen" aria-label="Nachziehstapel - Klicken zum Karte ziehen"></button>
+            <div id="discard-pile" class="pile" title="Ablagestapel" role="img" aria-label="Ablagestapel - Zeigt die oberste Karte"></div>
+            <div id="color-indicator" class="diamond" role="status" aria-label="Aktuelle Spielfarbe"></div>
+
+            <!-- Der Richtungsanzeiger -->
+            <div id="turn-info" aria-live="polite">
+              <span id="active-player" aria-label="Aktueller Spieler"></span>
+              <span id="direction" title="Spielrichtung" aria-label="Spielrichtung">↻</span>
+            </div>
+
+            <!-- Der Uno Button ist oberhalb der Stapel-->
+            <button id="uno-btn" class="uno-centered" title="UNO rufen" aria-label="UNO rufen - Drücken wenn nur noch eine Karte übrig">UNO</button>
+
+          </div>
+        </div>
+
+      <!-- Buttons UNTERHALB des SpielBRETTS -->
+      <div id="bottom-controls" role="toolbar" aria-label="Spielsteuerung">
+        <button id="draw-btn" aria-label="Karte vom Stapel ziehen">Karte ziehen</button>
+        <button id="new-game-btn" aria-label="Neues Spiel starten">Neues Spiel</button>
+      </div>
+
+    </div>
+
+
+    <!-- Benachrichtigungsfenster (TOAST) -->
+    <div id="messages" class="messages" style="display:none" role="alert" aria-live="assertive"></div>
+
+    <!-- Snowfall Easter Egg -->
+    <div id="snowfall-container" style="display:none;" aria-hidden="true"></div>
+  </div>
+
+  <!-- MODALS - Outside #app for proper z-index stacking -->
+
+  <!-- SPECIAL FELD: Farbe wählen MODAL-Feld-->
+  <div id="color-picker" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="color-picker-title">
+    <div class="modal-content">
+      <h3 id="color-picker-title">Farbe wählen</h3>
+      <div class="colors" role="group" aria-label="Farbauswahl">
+        <button data-color="Red" class="color red" aria-label="Rot wählen"></button>
+        <button data-color="Yellow" class="color yellow" aria-label="Gelb wählen"></button>
+        <button data-color="Green" class="color green" aria-label="Grün wählen"></button>
+        <button data-color="Blue" class="color blue" aria-label="Blau wählen"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Winner Modal -->
+  <div id="winner-modal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="winner-title">
+    <div class="modal-content winner-content">
+      <h2 id="winner-title">Gewinner!</h2>
+      <div id="winner-scores" aria-label="Punktestand"></div>
+      <button id="winner-new-game-btn" aria-label="Neues Spiel starten">Neues Spiel</button>
+    </div>
+  </div>
+
+  <!-- Penalty Overlay (UNO vergessen) -->
+  <div id="penalty-overlay" style="display:none;" role="alert" aria-label="Strafpunkte Anzeige">
+    <img id="penalty-image" src="symbols/strafpunkte.png" alt="Strafpunkte - Du hast vergessen UNO zu rufen!">
+  </div>
+
+  <!-- Link your JavaScript file -->
+  <script src="scripts/script.js"></script>
+</body>
+</html>

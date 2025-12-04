@@ -1,0 +1,582 @@
+1. Side Player Layout (CSS)
+
+  - Changed from flexbox to CSS Grid: grid-template-columns: repeat(2, 60px)
+  - Fixed 2 columns with grid-auto-rows: 90px
+  - max-height: 380px shows exactly 4 rows (8 cards)
+  - overflow-y: auto enables scrollbar when more cards
+
+  2. +2/+4 Alert Messages (script.js:219-235)
+
+  - Changed to generic messages:
+    - +2: "Der nächste Spieler bekommt +2 Karten!"
+    - +4: "Der nächste Spieler bekommt +4 Karten!"
+
+  3. Black14 (ChangeColor) Display (script.js:198-223)
+
+  When color is chosen:
+  - Blue → wild_b.png + blue diamond
+  - Red → wild_r.png + red diamond
+  - Green → wild_v.png + green diamond
+  - Yellow → wild_j.png + yellow diamond
+
+  4. Black13 (+4) Display (script.js:216-219)
+
+  When color is chosen:
+  - Blue → Blue13.png + blue diamond
+  - Red → Red13.png + red diamond
+  - Green → Green13.png + green diamond
+  - Yellow → Yellow13.png + yellow diamond
+
+  Additional improvements:
+  - Added chosenWildColor state variable to track the chosen color
+  - Updated isCardPlayable() to check against chosen color when wild card is on top
+  - Color indicator (diamond) shows the chosen color for wild cards
+  - chosenWildColor resets when non-wild card is played or new game starts
+
+
+UNO Game Enhancement Plan
+
+ Overview
+
+ 8 enhancements to the UNO game: UNO button fix, layout improvements, animations, sounds, and bug fixes.
+
+ ---
+ Issue 1: UNO Button Shows "null" + Turn Switching Bug
+
+ Problem:
+ - When UNO is called, toast shows "null ruft UNO!" instead of player name
+ - Turn switches immediately after playing penultimate card, but player needs 20 seconds to call UNO while still highlighted
+
+ Root Cause:
+ - In onCardClick() (line 808): currentPlayer = nextPlayer happens BEFORE startUnoTimer()
+ - The player who needs to call UNO is no longer the current player when timer starts
+
+ Solution:
+ 1. Delay switching currentPlayer until AFTER UNO timer resolves (button pressed or timeout)
+ 2. Create a "pending next player" state during UNO countdown
+ 3. BLOCK ALL ACTIONS during UNO countdown - game pauses completely
+ 4. Add gameBlocked state variable to prevent any card plays or draws
+ 5. Prevent winning if UNO wasn't called (player gets penalty cards first)
+
+ Implementation Details:
+ // New state variables
+ let gameBlocked = false;      // True during UNO countdown
+ let pendingNextPlayer = null; // Store next player during countdown
+
+ // In startUnoTimer():
+ gameBlocked = true;
+ pendingNextPlayer = nextPlayer;
+ // Don't switch currentPlayer yet
+
+ // In cancelUnoTimer() / after UNO is called:
+ gameBlocked = false;
+ currentPlayer = pendingNextPlayer;
+ pendingNextPlayer = null;
+
+ // In onCardClick() and onDrawCard():
+ if (gameBlocked) {
+   showToast("Warte auf UNO-Ruf!");
+   return;
+ }
+
+ Files to modify:
+ - /Users/tom/dev/UNO-UX/scripts/script.js
+   - Add gameBlocked and pendingNextPlayer state variables
+   - Modify onCardClick() to check gameBlocked and delay player switch
+   - Modify onDrawCard() to check gameBlocked
+   - Modify startUnoTimer() to set gameBlocked = true
+   - Modify cancelUnoTimer() to set gameBlocked = false and switch player
+   - Modify applyUnoPenalty() to handle blocking correctly
+
+ ---
+ Issue 2: Move Turn Info to Center Area
+
+ Problem:
+ - Player info boxes may overlap with turn info
+ - Turn info should be clearly visible below the card piles
+
+ Current State:
+ - #turn-info is positioned at top: 105% of #center-area (below piles)
+ - Already in a reasonable position but may need adjustment
+
+ Solution:
+ 1. Keep turn info in center area but ensure proper spacing
+ 2. Add more vertical space below piles for turn info
+ 3. Ensure no overlap with player boxes by adjusting player positioning
+
+ Files to modify:
+ - /Users/tom/dev/UNO-UX/styles/style.css
+   - Adjust #turn-info positioning
+   - Ensure #center-area has enough space
+
+ ---
+ Issue 3: Players 1 & 3 Layout (5 columns x 2 rows)
+
+ Problem:
+ - Players 1 & 3 (top/bottom) should show max 10 cards (5 cols x 2 rows)
+ - Currently using flex-direction: row without grid layout
+
+ Solution:
+ 1. Change players 1 & 3 .hand to CSS grid like players 2 & 4
+ 2. Set grid-template-columns: repeat(5, 60px) for 5 columns
+ 3. Set max-height for 2 rows with overflow-y: auto
+
+ Files to modify:
+ - /Users/tom/dev/UNO-UX/styles/style.css
+   - Update #player1 .hand and #player3 .hand to grid layout
+
+ ---
+ Issue 4: Card Dealing Animation (Flying Cards)
+
+ Problem:
+ - No animation when cards are dealt at game start or when player draws
+
+ Solution: Flying Cards Animation
+ 1. Create temporary card element at draw pile position
+ 2. Calculate target position (player's hand area)
+ 3. Animate card flying from draw pile to target using CSS transforms
+ 4. Remove temporary element after animation completes
+
+ Implementation Details:
+ // Create flying card element
+ function animateCardDeal(targetPlayerIdx, delay = 0) {
+   return new Promise(resolve => {
+     setTimeout(() => {
+       const card = document.createElement('div');
+       card.className = 'flying-card';
+       // Position at draw pile
+       // Animate to player position using CSS transition
+       // Remove after animation
+       resolve();
+     }, delay);
+   });
+ }
+
+ // At game start: deal 7 cards to each player with staggered timing
+ async function animateInitialDeal() {
+   for (let round = 0; round < 7; round++) {
+     for (let player = 0; player < 4; player++) {
+       await animateCardDeal(player, 100); // 100ms between cards
+     }
+   }
+ }
+
+ CSS Animation:
+ .flying-card {
+   position: fixed;
+   width: 60px;
+   height: 90px;
+   background-image: url('images/cards/back0.png');
+   background-size: cover;
+   z-index: 1000;
+   transition: transform 0.3s ease-out, opacity 0.3s;
+ }
+
+ Files to modify:
+ - /Users/tom/dev/UNO-UX/styles/style.css
+   - Add .flying-card class with transitions
+ - /Users/tom/dev/UNO-UX/scripts/script.js
+   - Add animateCardDeal() function
+   - Add animateInitialDeal() function
+   - Modify onStartGame() to call animateInitialDeal()
+   - Modify onDrawCard() to call animateCardDeal() for drawn card
+
+ ---
+ Issue 5: Black13 Bug (Color Choice Not Working)
+
+ Problem:
+ - When Black13 (+4) is played and color is chosen, game doesn't proceed correctly
+ - TopCard should show [Color]13.png and diamond should show chosen color
+
+ Investigation Needed:
+ - Check if chosenWildColor is being set correctly
+ - Check if getTopCardImagePath() returns correct path
+ - Check if server response is handled properly
+
+ Likely Cause:
+ - The topCard from server may still have Color: "Black" after wild card is played
+ - The chosenWildColor may be reset by refreshGameState()
+
+ Solution:
+ 1. Preserve chosenWildColor across refreshGameState() calls
+ 2. Only reset chosenWildColor when a NON-wild card becomes top card
+ 3. Check server response for wild card color handling
+
+ Files to modify:
+ - /Users/tom/dev/UNO-UX/scripts/script.js
+   - Modify refreshGameState() to preserve chosenWildColor for wild cards
+   - Debug logging to trace the issue
+
+ ---
+ Issue 6: Snowfall Animation on Turn Info Click (Toggle)
+
+ Problem:
+ - Easter egg: clicking turn info should trigger snowfall animation
+
+ Solution: Toggle On/Off with Clicks
+ 1. Create CSS snowfall animation with multiple snowflake elements
+ 2. Create #snowfall-container overlay div (pointer-events: none)
+ 3. Add click handler to #turn-info
+ 4. Toggle behavior: Click once to start, click again to stop
+ 5. Track snowfall state with snowfallActive variable
+
+ Implementation Details:
+ let snowfallActive = false;
+
+ function toggleSnowfall() {
+   const container = document.getElementById('snowfall-container');
+   if (snowfallActive) {
+     // Stop snowfall
+     container.innerHTML = '';
+     container.style.display = 'none';
+     snowfallActive = false;
+   } else {
+     // Start snowfall
+     container.style.display = 'block';
+     createSnowflakes(50); // Create 50 snowflakes
+     snowfallActive = true;
+   }
+ }
+
+ function createSnowflakes(count) {
+   const container = document.getElementById('snowfall-container');
+   for (let i = 0; i < count; i++) {
+     const flake = document.createElement('div');
+     flake.className = 'snowflake';
+     flake.style.left = Math.random() * 100 + '%';
+     flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+     flake.style.animationDelay = Math.random() * 2 + 's';
+     flake.textContent = '❄';
+     container.appendChild(flake);
+   }
+ }
+
+ CSS Animation:
+ #snowfall-container {
+   position: fixed;
+   inset: 0;
+   pointer-events: none;
+   overflow: hidden;
+   z-index: 500;
+ }
+
+ .snowflake {
+   position: absolute;
+   top: -20px;
+   color: white;
+   font-size: 1.5em;
+   animation: snowfall linear infinite;
+   opacity: 0.8;
+ }
+
+ @keyframes snowfall {
+   0% { transform: translateY(0) rotate(0deg); }
+   100% { transform: translateY(100vh) rotate(360deg); }
+ }
+
+ Files to modify:
+ - /Users/tom/dev/UNO-UX/index.html
+   - Add <div id="snowfall-container"></div>
+ - /Users/tom/dev/UNO-UX/styles/style.css
+   - Add #snowfall-container styles
+   - Add .snowflake styles
+   - Add @keyframes snowfall animation
+ - /Users/tom/dev/UNO-UX/scripts/script.js
+   - Add snowfallActive state variable
+   - Add toggleSnowfall() function
+   - Add createSnowflakes() function
+   - Add click handler to #turn-info in initializeApp()
+
+ ---
+ Issue 7 & 8: Avatar Sound Effects
+
+ Problem:
+ - Clicking avatar should play Christmas sound
+ - Grinch avatar should play different sound (ready-to-rumble)
+
+ Sound Files Available:
+ - sounds/536245___merry-christmas.mp3 (for all except grinch)
+ - sounds/330383__ready-to-rumble-grinch.mp3 (for grinch only)
+
+ Solution:
+ 1. Create audio elements for both sounds
+ 2. Add click handlers to all avatar images
+ 3. Check avatar filename to determine which sound to play
+ 4. Grinch detection: check if avatar src contains "grinch"
+
+ Files to modify:
+ - /Users/tom/dev/UNO-UX/scripts/script.js
+   - Add playAvatarSound() function
+   - Add click handlers to .avatar elements in renderPlayerSlot()
+   - Create Audio objects for sound playback
+
+ ---
+ Implementation Order
+
+ 1. Issue 5 (Bug fix) - Fix Black13 color choice bug first - CRITICAL
+ 2. Issue 1 (Critical) - Fix UNO button name display and turn switching/blocking
+ 3. Issue 3 (Layout) - Fix player 1 & 3 card grid (5 cols x 2 rows)
+ 4. Issue 2 (Layout) - Adjust turn info positioning if needed
+ 5. Issue 7 & 8 (Sounds) - Add avatar sound effects (Christmas + Grinch)
+ 6. Issue 6 (Animation) - Add snowfall Easter egg (toggle)
+ 7. Issue 4 (Animation) - Add flying card dealing animation
+
+ ---
+ Summary of Changes by File
+
+ /Users/tom/dev/UNO-UX/scripts/script.js
+
+ - Add state: gameBlocked, pendingNextPlayer, snowfallActive
+ - Fix startUnoTimer() - block game, store pending player
+ - Fix cancelUnoTimer() - unblock game, switch to pending player
+ - Fix onUnoClick() - use correct player name
+ - Fix onCardClick() - check gameBlocked, preserve chosenWildColor
+ - Fix onDrawCard() - check gameBlocked
+ - Fix refreshGameState() - don't reset chosenWildColor for wild cards
+ - Add toggleSnowfall(), createSnowflakes()
+ - Add animateCardDeal(), animateInitialDeal()
+ - Add playAvatarSound() with Grinch detection
+ - Add click handlers for turn-info and avatars
+
+ /Users/tom/dev/UNO-UX/styles/style.css
+
+ - Update #player1 .hand, #player3 .hand to grid (5 cols x 2 rows)
+ - Add .flying-card styles
+ - Add #snowfall-container, .snowflake styles
+ - Add @keyframes snowfall animation
+
+ /Users/tom/dev/UNO-UX/index.html
+
+ - Add <div id="snowfall-container"></div>
+
+ ---
+ Critical Files
+
+ - /Users/tom/dev/UNO-UX/scripts/script.js - Main game logic
+ - /Users/tom/dev/UNO-UX/styles/style.css - Styling and animations
+ - /Users/tom/dev/UNO-UX/index.html - HTML structure
+ - /Users/tom/dev/UNO-UX/sounds/536245___merry-christmas.mp3 - Christmas sound
+ - /Users/tom/dev/UNO-UX/sounds/330383__ready-to-rumble-grinch.mp3 - Grinch sound1
+
+ Completed Issues:
+
+  1. Issue 5 - Black13 color choice bug: The chosenWildColor logic was already properly implemented in the code.
+  2. Issue 1 - UNO button + game blocking:
+    - Added gameBlocked and pendingNextPlayer state variables
+    - Updated startUnoTimer() to block the game during UNO countdown
+    - Added finishUnoTimer() to unblock and switch players
+    - Fixed onUnoClick() to show correct player name
+    - Added gameBlocked check to both onCardClick() and onDrawCard()
+  3. Issue 3 - Players 1 & 3 grid layout (5x2): Updated CSS for #player1 .hand and #player3 .hand to use CSS Grid with repeat(5, 60px) columns and max 2 rows.
+  4. Issue 2 - Turn info positioning: Already properly positioned at top: 105% below the card piles.
+  5. Issues 7 & 8 - Avatar sound effects:
+    - Added playAvatarSound() function with Grinch detection
+    - Added attachAvatarClickHandlers() function
+    - Christmas sound for regular avatars, rumble sound for Grinch
+  6. Issue 6 - Snowfall toggle animation:
+    - Added #snowfall-container to HTML
+    - Added CSS for .snowflake animation
+    - Added toggleSnowfall() and createSnowflakes() functions
+    - Click handler on #turn-info toggles snowfall on/off
+  7. Issue 4 - Flying card dealing animation:
+    - Added CSS for .flying-card class
+    - Added animateCardDeal() for single card animation
+    - Added animateInitialDeal() that animates 28 cards (7 per player)
+    - Called in onStartGame() after game starts
+
+     UNO Game Bug Fixes - Round 2
+
+ Overview
+
+ 9 issues to fix: game start, layout spacing, animation changes, Black13 color handling, and turn switching bug.
+
+ ---
+ Issue 1: Game Always Starts with Player 1
+
+ Problem: Game should always start with the first player in the list (player 1).
+
+ Current: currentPlayer = response.NextPlayer (from server)
+
+ Solution: Override server response to always start with player 1:
+ currentPlayer = playerNames[0]; // Always first player
+
+ File: /Users/tom/dev/UNO-UX/scripts/script.js line 751
+
+ ---
+ Issue 2: Layout Spacing - No Overlaps
+
+ Problem:
+ - Turn info and center-area can be covered by player boxes
+ - UNO button can be covered
+ - Need more space between players 1/3 and center
+
+ Current CSS:
+ - #player1: bottom: 8px (too close)
+ - #player3: top: 8px (too close)
+ - No z-index on UNO button or center-area
+
+ Solution:
+ 1. Move player 1 further down: bottom: 20px or more
+ 2. Move player 3 further up: top: 20px or more
+ 3. Add z-index: 100 to #center-area and #uno-btn
+ 4. Increase #turn-info spacing
+
+ File: /Users/tom/dev/UNO-UX/styles/style.css
+
+ ---
+ Issue 3: Flying Card Animation Changes
+
+ Problem:
+ - Initial deal animation not wanted (remove it)
+ - But want flying cards for +2/+4 penalty cards
+
+ Solution:
+ 1. Remove animateInitialDeal() call from onStartGame()
+ 2. Create animatePenaltyCards(playerIdx, count) function
+ 3. Call it when +2 or +4 cards are played (before next player's turn)
+
+ Files: /Users/tom/dev/UNO-UX/scripts/script.js
+ - Remove line 781: animateInitialDeal();
+ - Add new function animatePenaltyCards()
+ - Integrate into the +2/+4 flow
+
+ ---
+ Issue 4: Player Boxes Too Tight
+
+ Problem: Player boxes (info + hand) need more padding/breathing room.
+
+ Current: .player { padding: 0.75rem; } (12px)
+
+ Solution: Increase padding:
+ .player {
+   padding: 1rem 1.25rem; /* 16px 20px */
+   gap: 12px; /* more gap between info and hand */
+ }
+
+ File: /Users/tom/dev/UNO-UX/styles/style.css line 93-103
+
+ ---
+ Issue 5: Penalty Overlay Pink Background
+
+ Problem: strafpunkte.png should have pink background, not dark.
+
+ Current: background: rgba(0,0,0,0.7)
+
+ Solution:
+ #penalty-overlay {
+   background: rgba(255, 105, 180, 0.85); /* Hot pink */
+ }
+
+ File: /Users/tom/dev/UNO-UX/styles/style.css line 599
+
+ ---
+ Issues 6-8: Black13 Color Choice Display
+
+ Problem: When Black13 (+4) is played and color is chosen:
+ - TopCard should show [Color]13.png (e.g., Yellow13.png)
+ - Only that chosen color OR black cards can be played next
+
+ Current Analysis:
+ - getTopCardImagePath() already returns correct path for Black13 + wildColor
+ - isCardPlayable() already uses chosenWildColor for validation
+ - The logic appears correct, but there may be a timing issue
+
+ Root Cause Investigation:
+ The bug likely occurs because refreshGameState() resets topCard from server (which still has Color: "Black"), but chosenWildColor should persist.
+
+ Verification Needed:
+ - Check if chosenWildColor persists after refreshGameState()
+ - Ensure renderTopCard() is called with the correct chosenWildColor
+
+ Solution:
+ 1. Ensure chosenWildColor is set BEFORE refreshGameState()
+ 2. Verify renderTopCard() uses global chosenWildColor
+ 3. Debug log to trace the issue if it persists
+
+ File: /Users/tom/dev/UNO-UX/scripts/script.js
+
+ ---
+ Issue 9: Turn Switching Bug After +4 Color Choice
+
+ Problem: After choosing color for +4:
+ - Only card backs visible (no active player showing cards)
+ - No player is highlighted
+
+ Root Cause:
+ In onCardClick():
+ 1. Color is chosen (line 829)
+ 2. Card played on server (line 837)
+ 3. chosenWildColor is set (line 855)
+ 4. refreshGameState() is called (line 865)
+ 5. Then currentPlayer = nextPlayer (line 874)
+
+ The issue: renderAllPlayers() might be called inside refreshGameState() BEFORE currentPlayer is updated, causing all players to show card backs.
+
+ Solution:
+ Set currentPlayer BEFORE calling refreshGameState():
+ // In onCardClick() - reorder:
+ chosenWildColor = wildColor; // Set color
+ currentPlayer = nextPlayer;   // Switch player FIRST
+ await refreshGameState();     // Then refresh
+ renderAllPlayers();           // Then render
+
+ File: /Users/tom/dev/UNO-UX/scripts/script.js lines 854-876
+
+ ---
+ Implementation Order
+
+ 1. Issue 9 (Critical Bug) - Fix turn switching after +4
+ 2. Issues 6-8 (Related) - Verify Black13 color display works
+ 3. Issue 1 - Force player 1 to start
+ 4. Issue 2 - Layout spacing fixes
+ 5. Issue 4 - Player box padding
+ 6. Issue 5 - Pink penalty background
+ 7. Issue 3 - Animation changes (remove initial, add penalty cards)
+
+ ---
+ Files to Modify
+
+ /Users/tom/dev/UNO-UX/scripts/script.js
+
+ - Line 751: Force currentPlayer = playerNames[0]
+ - Line 781: Remove animateInitialDeal() call
+ - Lines 854-876: Reorder player switch before refreshGameState
+ - Add: animatePenaltyCards() function for +2/+4 effects
+
+ /Users/tom/dev/UNO-UX/styles/style.css
+
+ - Lines 148-153: Increase #player1 bottom spacing
+ - Lines 181-186: Increase #player3 top spacing
+ - Lines 93-103: Increase .player padding
+ - Lines 203-210: Add z-index to #center-area
+ - Lines 386-405: Add z-index to #uno-btn
+ - Line 599: Change penalty overlay to pink
+
+ ---
+ Critical Files
+
+ - /Users/tom/dev/UNO-UX/scripts/script.js - Game logic
+ - /Users/tom/dev/UNO-UX/styles/style.css - Styling
+
+ JavaScript (scripts/script.js):
+
+  1. Issue 9 (Turn switching bug): Reordered onCardClick() so currentPlayer = nextPlayer is set BEFORE calling refreshGameState(). This ensures the correct
+  player is highlighted when the UI renders.
+  2. Issues 6-8 (Black13 color display): Fixed by the same reordering - chosenWildColor is now set before the UI refresh, so [Color]13.png displays correctly.
+  3. Issue 1 (Player 1 starts): Changed currentPlayer = response.NextPlayer to currentPlayer = names[0] so player 1 always starts.
+  4. Issue 3 (Animations):
+    - Removed animateInitialDeal() call at game start
+    - Added animatePenaltyCards() function
+    - Integrated penalty card animation when +2 or +4 is played
+
+  CSS (styles/style.css):
+
+  5. Issue 2 (Layout spacing):
+    - #player1: bottom: 8px → bottom: 15px, max-width: calc(100% - 320px)
+    - #player3: top: 8px → top: 15px, max-width: calc(100% - 320px)
+    - Added z-index: 100 to #center-area
+  6. Issue 4 (Player boxes padding):
+    - Increased padding from 0.75rem to 1rem 1.25rem
+    - Increased gap from 8px to 12px
+    - Increased border-radius from 10px to 12px
+  7. Issue 5 (Pink penalty background): Changed #penalty-overlay background from rgba(0,0,0,0.7) to rgba(255, 105, 180, 0.85) (hot pink)

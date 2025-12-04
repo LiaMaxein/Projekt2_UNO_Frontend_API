@@ -1,0 +1,945 @@
+/* =============================================
+   CSS Custom Properties (Variables) for Maintainability
+   ============================================= */
+:root {
+  /* Primary Colors */
+  --color-primary-dark: #003366;
+  --color-primary-light: #004b8d;
+
+  /* Accent Colors */
+  --color-accent-green: #21c46b;
+  --color-accent-gold: #ffd700;
+  --color-accent-yellow: #fdd835;
+  --color-accent-teal: #95e1d3;
+
+  /* Card Colors */
+  --color-card-red: #e53935;
+  --color-card-green: #43a047;
+  --color-card-yellow: #fdd835;
+  --color-card-blue: #1e88e5;
+
+  /* UI Colors */
+  --color-uno-button: #ecc83a;
+  --color-uno-text: #690f0f;
+  --color-draw-button: #ffd166;
+  --color-draw-text: #432c00;
+
+  /* Shadows */
+  --shadow-standard: 0 8px 20px rgba(0,0,0,0.45);
+  --shadow-card: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-button: 0 6px 16px rgba(0,0,0,0.4);
+
+  /* Card Dimensions */
+  --card-width: 72px;
+  --card-height: 108px;
+  --card-width-small: 60px;
+  --card-height-small: 90px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* =============================================
+   Dunkelblauer radialer Verlauf als Spielfeldhintergrund
+   ============================================= */
+
+html, body { height: 100%; }
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  margin: 0;
+  color: #fff;
+  background: radial-gradient(circle at 50% 50%, var(--color-primary-dark) 0%, var(--color-primary-light) 60%, var(--color-primary-dark) 100%);
+}
+
+/* Visually hidden - for screen readers only */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Zentrierter App-Container */
+#app { 
+  height: 100%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; }
+
+/* =============================================
+   Startbildschirm mit Eingabefeldern für Namen, Startbutton, Link zu Regeln
+   + UNO-Karte
+   ============================================= */
+
+#start-screen { 
+  text-align: center; 
+  background: rgba(0,0,0,0.35); 
+  padding: 24px; 
+  border-radius: 16px; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+
+#start-screen h1 { 
+  margin: 0 0 16px; 
+  letter-spacing: 2px; }
+
+.players-inputs { 
+  display: grid; 
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 10px; margin-bottom: 12px; }
+
+.players-inputs input { 
+  padding: 10px 12px; 
+  border-radius: 10px; 
+  border: 1px solid rgba(255,255,255,0.2); 
+  background: rgba(0,0,0,0.25); 
+  color: #fff; outline: none; }
+
+.controls { 
+  margin: 8px 0 6px; }
+
+.controls button { 
+  padding: 10px 16px; 
+  border-radius: 10px; 
+  border: 0; 
+  background: #21c46b; 
+  color: #062b1b; 
+  font-weight: 700; 
+  cursor: pointer; 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+
+.controls button:hover { 
+  filter: brightness(1.05); }
+
+#rules-link { 
+  display: inline-block; 
+  margin-top: 10px; 
+  color: #d7e9ff; 
+  text-decoration: none; 
+  opacity: 0.9; }
+
+#rules-link:hover { 
+  text-decoration: underline; 
+  opacity: 1; }
+
+
+/* =============================================
+   Der gesamte SPIELHINTERGRUND
+   ============================================= */
+#game-screen{
+  width: min(1200px, 96vw); 
+  height: min(720px, 90vh); 
+  position: relative;
+}
+
+/* =============================================
+   Spielbrett: Fläche + Positionierung
+   ============================================= */
+
+#board { width: 100%; height: 100%; position: relative; }
+
+/* Spielerboxen (Avatar+Name+Score, Handkarten) */
+
+.player {
+  position: absolute;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.player .info {
+  background: rgba(0,0,0,0.35);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.player.active .info {
+  outline: 2px solid #fff;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.2), 0 10px 24px rgba(0,0,0,0.5);
+}
+
+.player .hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  overflow: auto;
+  max-width: 100%;
+}
+
+/* Karten in den Händen */
+.player .hand .card {
+  width: 60px;
+  height: 90px;
+  flex-shrink: 0;
+}
+
+.player .avatar {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+}
+
+.player .score { display: inline; }
+
+/* Spielerpositionen: unten, links, oben, rechts - volle Breite/Höhe nutzen */
+#player1 {
+  left: 50%;
+  bottom: 15px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 320px);
+}
+
+#player1 .hand {
+  display: grid;
+  grid-template-columns: repeat(5, 60px);
+  grid-auto-rows: 90px;
+  gap: 4px;
+  max-height: 188px; /* 2 rows visible */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#player2 {
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#player2 .hand {
+  display: grid;
+  grid-template-columns: repeat(2, 60px);
+  grid-auto-rows: 90px;
+  gap: 4px;
+  max-height: 380px; /* 4 rows visible */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#player3 {
+  left: 50%;
+  top: 15px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 320px);
+}
+
+#player3 .hand {
+  display: grid;
+  grid-template-columns: repeat(5, 60px);
+  grid-auto-rows: 90px;
+  gap: 4px;
+  max-height: 188px; /* 2 rows visible */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#player4 {
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+#player4 .hand {
+  display: grid;
+  grid-template-columns: repeat(2, 60px);
+  grid-auto-rows: 90px;
+  gap: 4px;
+  max-height: 380px; /* 4 rows visible */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Mittlerer Bereich: Stapel + Farbdia + Zuginfo */
+#center-area {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 100; }
+
+.pile { 
+  width: 80px; 
+  height: 120px; 
+  border-radius: 12px; 
+  border: 3px solid #fff; 
+  background: #000; 
+  box-shadow: 0 8px 22px rgba(0,0,0,0.45); 
+  background-size: cover; 
+  background-position: center; }
+
+/* Ablagestapel/ ehemals TopCard */
+#discard-pile, #top-card { 
+  width: 100px;
+  height: 150px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  margin: 8px;
+  cursor: pointer; 
+  transform: rotate(-4deg); }
+
+#discard-pile .card {
+  margin: 0 auto;
+  color: white;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+/* Nachziehstapel */
+#draw-pile {
+  width: 100px;
+  height: 150px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  margin: 8px;
+  cursor: pointer; 
+  transform: rotate(6deg); }
+
+/* Farbindikator (zeigt aktuell gewählte Farbe) */
+.diamond { 
+  width: 26px; 
+  height: 26px; 
+  transform: rotate(45deg); 
+  border: 2px solid rgba(255,255,255,0.9); 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+
+.diamond.red { 
+  background: #e53935; }
+
+.diamond.green { 
+  background: #43a047; }
+
+.diamond.yellow { 
+  background: #fdd835; }
+
+.diamond.blue { 
+  background: #1e88e5; }
+
+/* Zuginfo (aktiver Spieler + Richtungspfeil) */
+#turn-info { 
+  position: absolute; 
+  top: 105%; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  font-weight: 700; 
+  display: flex; 
+  gap: 12px; 
+  align-items: center; 
+  text-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+
+#direction { 
+  font-size: 20px; 
+  opacity: 0.85; }
+
+/* Karten-Darstellung (als Bild-Background) */
+.card { 
+  width: 72px; 
+  height: 108px; 
+  border-radius: 12px; 
+  border: 3px solid rgba(255,255,255,0.9); 
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45); 
+  background-size: cover; 
+  background-position: center; 
+  transition: transform .18s ease, filter .18s ease; 
+  position: relative; }
+.card.playable {
+  cursor: pointer; 
+  transition: transform 0.15s ease, box-shadow 0.15s ease;}
+
+.card.playable:hover { 
+  transform: translateY(-6px) rotate(-2deg) scale(1.03); 
+  box-shadow: 0 5px 12px rgba(0,0,0,0.3)}
+
+.card.unplayable { 
+  filter: grayscale(0.6) brightness(0.8); }
+
+
+/* Highlight the current player with a gold border and shadow */
+.player.current-turn {
+  border: 4px solid gold;
+  box-shadow: 0 0 15px gold;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+  padding: 5px;
+
+}
+
+/* Current player's playable cards get hover effect */
+.player.current-turn .card.playable {
+  cursor: pointer;
+  
+}
+
+/* Non-current players — no pointer, no hover */
+.player:not(.current-turn) .card {
+  cursor: default;
+  pointer-events: none;
+  transform: none;
+  box-shadow: var(--shadow-card);
+}
+
+/* Pointer cursor for buttons */
+button, #draw-btn {
+  cursor: pointer;
+}
+
+
+/* 21.11.2025 switch draw-btn to img */
+.draw-img {
+  width: 90px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.draw-img:hover {
+  transform: scale(1.1);
+}
+
+/* Untere Steuerleiste */
+#bottom-controls { 
+  position: absolute; 
+  left: 50%; 
+  bottom: -6px; 
+  transform: translate(-50%, 100%); 
+  display: flex; 
+  gap: 12px; }
+
+#bottom-controls button { 
+  padding: 10px 16px; 
+  border-radius: 10px; 
+  border: 0; 
+  background: #ffd166; 
+  color: #432c00; 
+  font-weight: 700; 
+  cursor: pointer; 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4); }
+
+#bottom-controls button:hover { 
+  filter: brightness(1.05); }
+
+#new-game-btn { 
+  background: #95e1d3; 
+  color: #063c35; }
+
+/* UNO Button Optik (leicht abgesetzt) + oberhalb der Center Area */
+#uno-btn { 
+  background: #ecc83a; 
+  color: #690f0f; }
+#uno-btn:hover { 
+  filter: brightness(1.05); }
+
+.uno-centered { 
+  position: absolute; 
+  bottom: calc(100% + 20px); 
+  left: 50%; 
+  transform: translateX(-50%); 
+  padding: 10px 20px; 
+  border-radius: 999px; 
+  border: 0; 
+  background: #ecc83a; 
+  color: #690f0f; 
+  font-weight: 800; 
+  font-size: 18px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35); 
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.uno-centered:hover { 
+  filter: brightness(1.1);
+  transform: translateX(-50%) scale(1.05);
+}
+
+/* Glitzer-Animation für UNO-Button */
+@keyframes sparkle {
+  0%, 100% { 
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35),
+                0 0 10px rgba(236, 200, 58, 0.5),
+                0 0 20px rgba(236, 200, 58, 0.3);
+  }
+  50% { 
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35),
+                0 0 20px rgba(236, 200, 58, 0.8),
+                0 0 40px rgba(236, 200, 58, 0.6),
+                0 0 60px rgba(236, 200, 58, 0.4);
+  }
+}
+
+.uno-centered.sparkle {
+  animation: sparkle 0.6s ease;
+}
+
+/* Immer sichtbarer Hilfe/Regeln-Button 
+- ÜBERARBEITEN */
+#help-btn { position: absolute; right: 8px; top: 8px; background: rgba(0,0,0,0.5); color: #fff; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+#help-btn:hover { background: rgba(0,0,0,0.65); }
+
+/* Farbauswahl-Modal (für Wild/+4) */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 2000; }
+.modal .modal-content { 
+  background: #0c2340; 
+  border: 1px solid rgba(255,255,255,0.15); 
+  padding: 18px; 
+  border-radius: 12px; 
+  min-width: 260px; 
+  text-align: center; 
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+.modal .colors { 
+  display: flex; 
+  justify-content: center; 
+  gap: 12px; 
+  margin-top: 10px; }
+.modal .color { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 8px; 
+  border: 2px solid rgba(255,255,255,0.9); 
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4); 
+  cursor: pointer; }
+.modal .color.red { 
+  background: #e53935; }
+.modal .color.yellow { 
+  background: #fdd835; }
+.modal .color.green { 
+  background: #43a047; }
+.modal .color.blue { 
+  background: #1e88e5; }
+
+/* Kurze Hinweise (Fehlermeldungen usw.) */
+.messages { 
+  position: fixed; 
+  left: 50%; 
+  bottom: 24px; 
+  transform: translateX(-50%); 
+  background: rgba(0,0,0,0.75); 
+  color: #fff; 
+  padding: 10px 14px; 
+  border-radius: 8px; 
+  box-shadow: 0 10px 24px rgba(0,0,0,0.5); }
+
+/* Animationen: Ablegen/Fehlerfeedback */
+@keyframes drop-to-discard { 
+  0% { transform: translate(0,0) scale(1); opacity: 1; } 
+  100% { transform: translate(0,-40px) rotate(-6deg) scale(0.9); opacity: 0; } }
+@keyframes shake { 
+  0%,100% { transform: translateX(0); } 
+  25% { transform: translateX(-8px) rotate(-2deg); } 
+  75% { transform: translateX(8px) rotate(2deg); } 
+}
+.invalid { 
+  animation: shake 400ms ease;
+  filter: brightness(1.2) saturate(1.3);
+}
+
+/* Gewinner-Hervorhebung */
+.player.winner {
+  animation: winnerPulse 1.5s ease-in-out infinite;
+  z-index: 10;
+}
+
+.player.winner .info {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+  color: #000;
+  font-weight: 900;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 215, 0, 0.5);
+  border: 3px solid #fff;
+}
+
+@keyframes winnerPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+  }
+}
+
+/* Animation für Karte auf Ablagestapel */
+@keyframes discardPop {
+  0% { transform: rotate(-4deg) scale(0.8); opacity: 0.5; }
+  50% { transform: rotate(-4deg) scale(1.1); }
+  100% { transform: rotate(-4deg) scale(1); opacity: 1; }
+}
+
+.discard-animate {
+  animation: discardPop 0.3s ease-out;
+}
+
+/* Winner Modal */
+.winner-content {
+  text-align: center;
+  min-width: 320px;
+}
+
+.winner-content h2 {
+  color: #ffd700;
+  font-size: 2em;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.5);
+}
+
+.winner-content .scores-list {
+  margin: 20px 0;
+  text-align: left;
+}
+
+.winner-content .score-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+}
+
+.winner-content .score-row.winner-row {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+  border: 1px solid #ffd700;
+}
+
+.winner-content .score-row .player-name {
+  font-weight: bold;
+}
+
+.winner-content .score-row .player-score {
+  color: #fdd835;
+}
+
+#winner-new-game-btn {
+  margin-top: 20px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 0;
+  background: #21c46b;
+  color: #062b1b;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+#winner-new-game-btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Penalty Overlay */
+#penalty-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 105, 180, 0.85);
+  z-index: 1000;
+}
+
+#penalty-overlay img {
+  max-width: 300px;
+  max-height: 300px;
+  animation: penaltyPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes penaltyPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+/* Direction indicator rotation */
+#direction {
+  transition: transform 0.3s ease;
+}
+
+#direction.counter-clockwise {
+  transform: scaleX(-1);
+}
+
+/* Snowfall Easter Egg */
+#snowfall-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 500;
+}
+
+.snowflake {
+  position: absolute;
+  top: -20px;
+  color: white;
+  font-size: 1.5em;
+  animation: snowfall linear infinite;
+  opacity: 0.8;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes snowfall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+/* Turn info clickable for Easter Egg */
+#turn-info {
+  cursor: pointer;
+}
+
+/* Flying Card Animation (for dealing) */
+.flying-card {
+  position: fixed;
+  width: 60px;
+  height: 90px;
+  background-image: url('../images/cards/back0.png');
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  pointer-events: none;
+  transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+}
+
+/* =============================================
+   Responsive Design - Media Queries
+   ============================================= */
+
+/* Tablet and smaller desktops */
+@media (max-width: 1024px) {
+  #game-screen {
+    width: 98vw;
+    height: 85vh;
+  }
+
+  .player .hand .card {
+    width: 50px;
+    height: 75px;
+  }
+
+  #player1 .hand,
+  #player3 .hand {
+    grid-template-columns: repeat(4, 50px);
+    grid-auto-rows: 75px;
+  }
+
+  #player2 .hand,
+  #player4 .hand {
+    grid-template-columns: repeat(2, 50px);
+    grid-auto-rows: 75px;
+  }
+
+  .pile,
+  #discard-pile,
+  #draw-pile {
+    width: 70px;
+    height: 105px;
+  }
+}
+
+/* Mobile landscape and small tablets */
+@media (max-width: 768px) {
+  #game-screen {
+    width: 100vw;
+    height: 80vh;
+  }
+
+  .player {
+    padding: 0.5rem 0.75rem;
+    gap: 6px;
+  }
+
+  .player .info {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .player .avatar {
+    width: 20px;
+    height: 20px;
+  }
+
+  .player .hand .card {
+    width: 40px;
+    height: 60px;
+  }
+
+  #player1 .hand,
+  #player3 .hand {
+    grid-template-columns: repeat(5, 40px);
+    grid-auto-rows: 60px;
+    max-height: 130px;
+  }
+
+  #player2 .hand,
+  #player4 .hand {
+    grid-template-columns: repeat(2, 40px);
+    grid-auto-rows: 60px;
+    max-height: 250px;
+  }
+
+  #player1,
+  #player3 {
+    max-width: calc(100% - 200px);
+  }
+
+  .pile,
+  #discard-pile,
+  #draw-pile {
+    width: 55px;
+    height: 82px;
+  }
+
+  #center-area {
+    gap: 10px;
+  }
+
+  .diamond {
+    width: 20px;
+    height: 20px;
+  }
+
+  #turn-info {
+    font-size: 12px;
+  }
+
+  .uno-centered {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  #bottom-controls button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .modal .modal-content {
+    min-width: 90%;
+    max-width: 300px;
+    padding: 14px;
+  }
+
+  .winner-content {
+    min-width: auto;
+  }
+}
+
+/* Mobile portrait */
+@media (max-width: 480px) {
+  #start-screen {
+    padding: 16px;
+    margin: 10px;
+  }
+
+  .players-inputs {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .players-inputs input {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  #game-screen {
+    height: 75vh;
+  }
+
+  .player .hand .card {
+    width: 35px;
+    height: 52px;
+  }
+
+  #player1 .hand,
+  #player3 .hand {
+    grid-template-columns: repeat(6, 35px);
+    grid-auto-rows: 52px;
+    max-height: 114px;
+  }
+
+  #player2 .hand,
+  #player4 .hand {
+    grid-template-columns: repeat(2, 35px);
+    grid-auto-rows: 52px;
+    max-height: 170px;
+  }
+
+  .pile,
+  #discard-pile,
+  #draw-pile {
+    width: 45px;
+    height: 67px;
+  }
+
+  .modal .color {
+    width: 35px;
+    height: 35px;
+  }
+
+  .flying-card {
+    width: 35px;
+    height: 52px;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  .card.playable {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .modal .color {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  #uno-btn,
+  #bottom-controls button {
+    min-height: 44px;
+    padding: 12px 20px;
+  }
+
+  /* Remove hover effects on touch */
+  .card.playable:hover {
+    transform: none;
+  }
+
+  .card.playable:active {
+    transform: scale(0.95);
+  }
+}

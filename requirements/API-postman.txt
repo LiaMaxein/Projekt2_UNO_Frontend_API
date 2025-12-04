@@ -1,0 +1,259 @@
+const API_BASE_URL = "http://nowaunoweb.azurewebsites.net";
+
+1.0 - Dieser Endpunkt erzeugt ein neues Spiel und teilt die Karten aus
+    POST: http://nowaunoweb.azurewebsites.net/api/Game/Start
+        Übergeben Sie hier die Namen der 4 Spieler (es müssen 4 Namen angegeben werden)
+        Body Parameters als JSON-Request der API übergeben:
+            [
+            "Player 1",
+            "Player 2",
+            "Player 3",
+            "Player 4"
+            ]
+        JSON-Response:
+            {
+                "Id": "3843a78a-801f-47e1-8372-47ea9063619a",   --> "Id": globally unique identifier (Spiel ID)
+                "Players": [                                    --> Players[]: Collection/List of "PlayerResponse" 
+                    {
+                        "Player": "Player 1",                       --> "Player": Name 
+                        "Cards": [                                  --> Collection of "CardResponse":
+                            {
+                                "Color": "Yellow",                      --> "Color": Red, Green, Yellow, Blue, Wild
+                                "Text": "One",                          --> String of Value for Special-Card-Recognition
+                                "Value": 1,                             --> Unique numeric value for cardface: 0-9, 10:Draw2, 11:Skip, 12:Reverse, 13:Draw4, 14:ChangeColor
+                                "Score": 1                              --> singular score of card
+                            },
+                            { "Color": "Green", "Text": "Seven", "Value": 7, "Score": 7 },
+                            { "Color": "Green", "Text": "Eight", "Value": 8, "Score": 8 },
+                            { "Color": "Green", "Text": "Nine", "Value": 9, "Score": 9 },
+                            { "Color": "Green", "Text": "Nine", "Value": 9, "Score": 9 },
+                            { "Color": "Green", "Text": "Reverse", "Value": 12, "Score": 20 },
+                            { "Color": "Black", "Text": "ChangeColor", "Value": 14, "Score": 50 }
+                        ],
+                        "Score": 104                                --> "Score" of Players Hand
+                    },
+                    {
+                        "Player": "Player 2",
+                        "Cards": [
+                            { "Color": "Red", "Text": "Nine", "Value": 9, "Score": 9 },
+                            { "Color": "Yellow", "Text": "Two", "Value": 2, "Score": 2 },
+                            { "Color": "Yellow", "Text": "Six", "Value": 6, "Score": 6 },
+                            { "Color": "Yellow", "Text": "Draw2", "Value": 10, "Score": 20 },
+                            { "Color": "Green", "Text": "Eight", "Value": 8, "Score": 8 },
+                            { "Color": "Green", "Text": "Skip", "Value": 11, "Score": 20 },
+                            { "Color": "Blue", "Text": "Nine", "Value": 9, "Score": 9 }
+                        ],
+                        "Score": 74
+                    },
+                    {
+                        "Player": "Player 3",
+                        "Cards": [
+                            { "Color": "Red", "Text": "Three", "Value": 3, "Score": 3 },
+                            { "Color": "Yellow", "Text": "Zero", "Value": 0, "Score": 0 },
+                            { "Color": "Yellow", "Text": "Five", "Value": 5, "Score": 5 },
+                            { "Color": "Yellow", "Text": "Eight", "Value": 8, "Score": 8 },
+                            { "Color": "Green", "Text": "Five", "Value": 5, "Score": 5 },
+                            { "Color": "Green", "Text": "Seven", "Value": 7, "Score": 7 },
+                            { "Color": "Black", "Text": "Draw4", "Value": 13, "Score": 50 }
+                        ],
+                        "Score": 78
+                    },
+                    {
+                        "Player": "Player 4",
+                        "Cards": [
+                            { "Color": "Red", "Text": "Zero", "Value": 0, "Score": 0 },
+                            { "Color": "Red", "Text": "Reverse", "Value": 12, "Score": 20 },
+                            { "Color": "Yellow", "Text": "Nine", "Value": 9, "Score": 9 },
+                            { "Color": "Yellow", "Text": "Draw2", "Value": 10, "Score": 20 },
+                            { "Color": "Green", "Text": "Two", "Value": 2, "Score": 2 },
+                            { "Color": "Blue", "Text": "Two", "Value": 2, "Score": 2 },
+                            { "Color": "Blue", "Text": "Draw2", "Value": 10, "Score": 20 }
+                        ],
+                        "Score": 73
+                    }
+                ],
+                "NextPlayer": "Player 1",                       --> "NextPlayer": Who's next?
+                "TopCard": {                                    --> "TopCard": on the discard pile
+                    "Color": "Blue",
+                    "Text": "Two",
+                    "Value": 2,
+                    "Score": 2
+                }
+            }
+1.1 - server-side game logic the backend handles: [Creating a game]
+    - Shuffle deck
+    - Deal cards
+    - Choose starting top card
+    - Set turn order
+    - Return hands & next player
+
+2.0 - Dieser Endpunkt liefert oberste Karte am Ablegestapel
+    GET: http://nowaunoweb.azurewebsites.net/api/Game/TopCard/{id}
+        URI-Parameter: {id} globally unique identifier is required for API-Getter
+        JSON-Response: "CardResponse" of the discard pile
+            { "Color": "Blue", "Text": "Two", "Value": 2, "Score": 2 }
+2.1 - server-side game logic the backend handles: [Fetching the top card at any time]
+
+
+3.0 - Mit diesem Endpunkt heben Sie eine Karte ab
+    PUT: http://nowaunoweb.azurewebsites.net/api/Game/DrawCard/{id}
+        URI-Parameter: {id} globally unique identifier is required for API-Putter
+        JSON-Response: NextPlayer, Player and the CardResponse
+            {
+            "NextPlayer": "Player 2",                           --> "NextPlayer": Who's next?
+            "Player": "Player 1",                               --> "Player": Who drew the card?
+            "Card":                                             --> "Card": CardResponse of drawn card.
+            { "Color": "Yellow", "Text": "Six", "Value": 6, "Score": 6 }
+            }
+3.1 - server-side game logic the backend handles: [Drawing a card]
+    - Validates whose turn it is
+    - Draws from the deck
+    - Advances turn
+    - Returns the drawn card
+
+
+4.0 - Übergeben Sie diesem Endpunkt die Karte, die Sie spielen möchten. Ist die Karte gültig, wird Sie gespielt. 
+    - Ist die Karte nicht passend oder hat der aktuelle Spieler die Karte nicht, erhalten Sie eine entsprechene Fehlermeldung.
+    PUT: http://nowaunoweb.azurewebsites.net/api/Game/PlayCard/{id}?value={value}&color={color}&wildColor={wildColor}
+        URI-Parameter:  {id} - globally unique identifier is required for API-Putter
+                        {value} - required string
+                        {color} - required string
+                        {wildColor} - required string
+        JSON-Response: PlayerResponse
+            { "Player": "Name",                     --> Der Spieler, der nun an der Reihe ist
+            "Cards": [ Collection of CardResponse   --> Die Karten, auf der Hand des Spielers
+                {...},{...},{...},
+            ], "Score": 6                           --> "Score" of Players Hand
+            }
+4.1 - server-side game logic the backend handles: [Playing a card]
+    - Validates if the player actually has the card
+    - Validates if the card matches the top card
+    - Applies special card logic:
+        > Draw2
+        > Skip
+        > Reverse
+        > Draw4
+        > ChangeColor (wild)
+    - Applies wildColor requirement
+    - Updates the discard pile
+    - Moves game to the next player
+    - Returns updated player card list & score
+
+5.0 - Verwenden Sie diesen Endpunkt um die aktuelle Hand des Spielers abzufragen
+    GET: http://nowaunoweb.azurewebsites.net/api/Game/GetCards/{id}?playerName={playerName}
+        URI-Parameter:  {id} - globally unique identifier is required for API-Putter
+                        {playerName} - require string
+        JSON-Response: PlayerResponse
+            { "Player": "Name",                     --> Der Spieler, der nun an der Reihe ist
+            "Cards": [ Collection of CardResponse   --> Die Karten, auf der Hand des Spielers
+                {...},{...},{...},
+            ], "Score": 6                           --> "Score" of Players Hand
+            }
+5.1 - server-side game logic the backend handles: [Getting a player’s hand at any time]
+
+👉 All "rule logic" = YES
+The backend validates all rules.
+You cannot cheat; invalid plays return an error.
+    ✔️ All UNO rules & logic: in backend
+    ✔️ All card actions & validation: in backend
+    ✔️ Turn handling & card dealing: in backend
+------------------------------------------------------------------------------------------------------------------------------
+👉 All "UI and flow logic" = NO
+You still must manage:
+    - Displaying state
+    - Deciding when to call each endpoint
+    - Handling turns visually
+    - Managing players in your frontend
+    ❌ UI
+    ❌ Game flow visibility
+    ❌ Real-time communication 
+    ❌ Winner detection
+    ❌ Player-side restrictions
+
+6.0 - What the API does NOT do
+    The backend only handles game rules, not game state awareness in the UI.
+    You must implement on the frontend:
+        ❌ Turn enforcement in the interface
+        The API knows the next player
+        Your frontend must:
+            - Show whose turn it is
+            - Disable "Play" or "Draw" buttons for the wrong player
+        ❌ UI logic
+        You must build:
+            - Card layout
+            - Player hand display
+            - Buttons for Draw/Play
+            - Color selector for wild cards
+            - Visualizing the discard pile
+            - Messaging (invalid move errors, alerts)
+        ❌ Multiplayer connection logic
+        The API is not real-time.
+        It does not:
+            - Push updates
+            - Synchronize state across clients
+            - Manage sessions or sockets
+        You must implement polling or refreshing logic:
+            - Every X seconds, call:
+                > /TopCard
+                > /GetCards
+                > And store game state in your UI
+        ❌ Game end detection
+        There is no endpoint saying:
+            - “Player has won”
+            - “Game is over”
+        You must detect on the client:
+            - A player with 0 cards → show winner screen
+        
+        Start game: POST /api/Game/Start → store id, store hands, show UI.
+        During each turn:
+            When player tries to play: PUT /api/Game/PlayCard/{id}?value=...&color=...&wildColor=...
+            When player draws: PUT /api/Game/DrawCard/{id}
+            Update UI:  GET /api/Game/GetCards/{id}?playerName=...
+                        GET /api/Game/TopCard/{id}
+
+------------------------------------------------------------------------------------------------------------------------------
+
+MOODLE AUFGABENSTELLUNG
+
+Das Uno-Spiel muss:
+
+    Muss dem Player die Möglichkeit geben 4 Namen einzugeben
+    Keine gleichen/leeren Namen sind erlaubt
+    Neues Spiel am Server starten
+    Alle Karten austeilen (darstellen als Bild)
+    Neben den Karten: Player-Namen anzeigen
+    Wenn Karte geklickt wird: versuchen sie abzulegen
+    Abgelegte Karten wird von Hand gelöscht 
+    Abgelegte Karten wird zu Top Card am Ablagestapel
+    Abheben funktioniert
+    Punkte jedes Players sind sichtbar
+    Punkte ändern sich bei jedem Spielzug
+    Aktiven Player darstellen
+    Spielrichtung darstellen
+    Top Card anzeigen: Aufgedeckte Karte darstellen (Ablagestapel)
+    Abhebestapel darstellen
+    CSS Animation bei Ablegen der Karte auf Ablagestapel
+    Animation bei ungültiger Aktion
+    Wenn das Spiel beendet ist: Gewinner*in hervorheben
+    Aktuell gewählte Farbe darstellen (wichtig bei +4 oder Farbwahl)
+    Keine unnötige Anfragen an Server (z.B: Farbe und Nummer lokal checken)
+    Button für neues Spiel
+    Ungültige Spielzüge verhindern
+    Link zu den Spielregeln anzeigen
+    Minimale Dokumentation 
+        (z.B.: vor Funktionen oder Funktionsblöcken: 
+        „Diese Funktion bekommt eine Karte und Prüft ob sie ablegbar ist“ oder 
+        „Diese Funktion startet ein neues Spiel auf dem Server“)
+
+Das Uno Spiel kann (optional):
+
+    nett aussehen
+    die Möglichkeit geben Uno zu rufen (und wenn es vergessen wird: 2 Karten heben)
+    Mehrere Runden spielbar sein
+    etc…
+
+
+* Easter Egg einbauen *
+
+- Menu with game rules links ? Lia 
+- Tipps? 
