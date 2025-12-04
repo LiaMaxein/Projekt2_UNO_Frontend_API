@@ -1,5 +1,6 @@
 /* =============================================
-   CSS Custom Properties (Variables) for Maintainability
+   CSS Custom Properties (Variablen) 
+   Variablen sind besser für die Wartung und übersichtlicher
    ============================================= */
 :root {
   /* Primary Colors */
@@ -212,7 +213,7 @@ body {
   grid-template-columns: repeat(5, 60px);
   grid-auto-rows: 90px;
   gap: 4px;
-  max-height: 188px; /* 2 rows visible */
+  max-height: 188px; /* 2 Reihen sind sichtbar */
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -228,7 +229,7 @@ body {
   grid-template-columns: repeat(2, 60px);
   grid-auto-rows: 90px;
   gap: 4px;
-  max-height: 380px; /* 4 rows visible */
+  max-height: 380px; /* 4 Reihen sind sichtbar */
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -245,7 +246,7 @@ body {
   grid-template-columns: repeat(5, 60px);
   grid-auto-rows: 90px;
   gap: 4px;
-  max-height: 188px; /* 2 rows visible */
+  max-height: 188px; /* 2 sichtbare Reihen */
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -261,12 +262,12 @@ body {
   grid-template-columns: repeat(2, 60px);
   grid-auto-rows: 90px;
   gap: 4px;
-  max-height: 380px; /* 4 rows visible */
+  max-height: 380px; /* 4 sichtbare Reihen */
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-/* Mittlerer Bereich: Stapel + Farbdia + Zuginfo */
+/* Mittlerer Bereich: Stapel + Farbdiamant + Zuginfo (wer ist dran) */
 #center-area {
   position: absolute;
   top: 50%;
@@ -318,7 +319,7 @@ body {
   cursor: pointer; 
   transform: rotate(6deg); }
 
-/* Farbindikator (zeigt aktuell gewählte Farbe) */
+/* Farbindikator / Diamant (zeigt aktuell gewählte Farbe) */
 .diamond { 
   width: 26px; 
   height: 26px; 
@@ -492,11 +493,11 @@ button, #draw-btn {
 }
 
 /* Immer sichtbarer Hilfe/Regeln-Button 
-- ÜBERARBEITEN */
+- ÜBERARBEITEN! */
 #help-btn { position: absolute; right: 8px; top: 8px; background: rgba(0,0,0,0.5); color: #fff; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
 #help-btn:hover { background: rgba(0,0,0,0.65); }
 
-/* Farbauswahl-Modal (für Wild/+4) */
+/* Farbauswahl-Modal (für Wild und die +4) */
 .modal {
   position: fixed;
   inset: 0;
@@ -545,7 +546,7 @@ button, #draw-btn {
   border-radius: 8px; 
   box-shadow: 0 10px 24px rgba(0,0,0,0.5); }
 
-/* Animationen: Ablegen/Fehlerfeedback */
+/* Animationen: Karte ablegen & Fehlermeldung wenn Karte nicht spielbar ist */
 @keyframes drop-to-discard { 
   0% { transform: translate(0,0) scale(1); opacity: 1; } 
   100% { transform: translate(0,-40px) rotate(-6deg) scale(0.9); opacity: 0; } }
@@ -652,7 +653,7 @@ button, #draw-btn {
   filter: brightness(1.1);
 }
 
-/* Penalty Overlay */
+/* Strafkarten PopUp */
 #penalty-overlay {
   position: fixed;
   inset: 0;
@@ -674,7 +675,7 @@ button, #draw-btn {
   100% { transform: scale(1.1); }
 }
 
-/* Direction indicator rotation */
+/* Richtungsanzeiger Drehung */
 #direction {
   transition: transform 0.3s ease;
 }
@@ -683,7 +684,7 @@ button, #draw-btn {
   transform: scaleX(-1);
 }
 
-/* Snowfall Easter Egg */
+/* Snowfall EASTER EGG */
 #snowfall-container {
   position: fixed;
   inset: 0;
@@ -713,12 +714,12 @@ button, #draw-btn {
   }
 }
 
-/* Turn info clickable for Easter Egg */
+/* Turn info clickbar für EASTER EGG */
 #turn-info {
   cursor: pointer;
 }
 
-/* Flying Card Animation (for dealing) */
+/* Flying Cards Animation für das Austeilen */
 .flying-card {
   position: fixed;
   width: 60px;

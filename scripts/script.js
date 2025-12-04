@@ -44,10 +44,10 @@ let unoButtonPressed = false;
 let gameBlocked = false; // True während UNO-Countdown - Spiel pausiert
 let pendingNextPlayer = null; // Nächster Spieler während UNO-Countdown
 
-// Easter Egg State
+// EASTER EGG State
 let snowfallActive = false;
 
-// Audio Elements
+// Audio Elements :)
 let christmasSound = null;
 let grinchSound = null;
 
@@ -185,20 +185,22 @@ async function playCardOnServer(card, wildColor = null) {
 // =============================================================================
 
 /**
- * Escapes HTML special characters to prevent XSS attacks
- * @param {string} text - The text to escape
- * @returns {string} - Escaped text safe for innerHTML
+ * Sicherheitsmaßnahme: Schützt vor XSS-Angriffen
+ * Escapes HTML: heißt HTML Zeichen maskieren, nimmt Text & verändert ihn
+ * so, dass besondere HTML-Zeichen nicht als Code interpretiert werden können
+ * @param {string} text - Der Text der sicher gemacht werden soll / Eingabe für die Funktion
+ * @returns {string} - Ausgabe, die wieder benutzt wird und sicher ist
  */
 function escapeHtml(text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
+  const div = document.createElement("div"); // erstellt ein unsichtbares HTML-Element
+  div.textContent = text; // setzt den Text in das Element.
+  return div.innerHTML; // holt den sicheren Text zurück
 }
 
 /**
- * Fisher-Yates shuffle algorithm - unbiased random shuffle
- * @param {Array} array - Array to shuffle (modified in place)
- * @returns {Array} - The shuffled array
+ * Fisher-Yates shuffle Algorythmus - erzeugt eine unverzerrte radomisierte Reihenfolge von Elementen in einem Array
+ * @param {Array} array - der Array welcher geshuffelt wird
+ * @returns {Array} - und das Endergebnis ;) 
  */
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -297,7 +299,7 @@ function getTopCardImagePath(card, wildColor) {
 }
 
 /**
- * Weist jedem Spieler zufällig einen Avatar zu (using Fisher-Yates shuffle)
+ * Weist jedem Spieler zufällig einen Avatar zu (benutzt den Fisher-Yates shuffle)
  */
 function assignAvatars() {
   const shuffled = shuffleArray([...AVATARS]);
@@ -363,11 +365,12 @@ function startUnoTimer(playerName, nextPlayer) {
   console.log(`UNO Timer gestartet für ${playerName} - 20 Sekunden. Spiel blockiert.`);
 
   // Timer starten - nach 20 Sekunden Strafe
-  // Using IIFE to properly await async penalty before finishing timer
+  // Hier wird eine sog. async IIFE genutzt
   unoTimerId = setTimeout(() => {
+    // die Funktion wird direkt aufgerufen
     (async () => {
       if (!unoButtonPressed && unoTimerActive) {
-        await applyUnoPenalty(playerName);
+        await applyUnoPenalty(playerName); // wartet sicher, bi die Strafe angewendet wurde - danach wird der Timer beendet
       }
       finishUnoTimer();
     })();
@@ -1104,7 +1107,7 @@ function animateInvalidMove(playerName, cardIndex) {
 }
 
 // =============================================================================
-// Easter Eggs
+// Easter Eggs 
 // =============================================================================
 
 /**
