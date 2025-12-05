@@ -19,7 +19,7 @@ const AVATARS = [
 ];
 
 // UNO timer duration in milliseconds
-const UNO_TIMER_DURATION = 20000;
+const UNO_TIMER_DURATION = 10000;
 
 // -----------------------------------------------------------------------------
 // Game State

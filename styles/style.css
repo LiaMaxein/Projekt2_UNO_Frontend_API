@@ -340,6 +340,7 @@ body {
   background: #1e88e5; }
 
 /* Zuginfo (aktiver Spieler + Richtungspfeil) */
+/* ÜBERARBEITEN! Darf nicht mit Spieler 1 überlappen */
 #turn-info { 
   position: absolute; 
   top: 105%; 
@@ -446,6 +447,7 @@ button, #draw-btn {
   color: #063c35; }
 
 /* UNO Button Optik (leicht abgesetzt) + oberhalb der Center Area */
+/* ÜBERARBEITEN - -DARF NICHT MIT SPIELER 3 ÜBERLAPPEN */ 
 #uno-btn { 
   background: #ecc83a; 
   color: #690f0f; }
@@ -493,9 +495,20 @@ button, #draw-btn {
 }
 
 /* Immer sichtbarer Hilfe/Regeln-Button 
-- ÜBERARBEITEN! */
-#help-btn { position: absolute; right: 8px; top: 8px; background: rgba(0,0,0,0.5); color: #fff; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; text-decoration: none; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-#help-btn:hover { background: rgba(0,0,0,0.65); }
+- ÜBERARBEITEN! sieht nicht gut aus und läuft noch nicht einwandfrei*/
+#rules-btn { position: absolute; 
+  right: 8px;
+  top: 8px;
+  background: rgba(0,0,0,0.5); 
+  color: #fff; 
+  width: 28px; 
+  height: 28px; 
+  display: grid; 
+  place-items: center; 
+  border-radius: 50%; 
+  text-decoration: none; 
+  box-shadow: 0 4px 12px rgba(39, 186, 188, 0.4); }
+#rules-btn:hover { background: rgba(133, 224, 195, 0.65); }
 
 /* Farbauswahl-Modal (für Wild und die +4) */
 .modal {
