@@ -43,7 +43,7 @@
      <!-- Der GESAMTE SCREEN während des Games -->
     <div id="game-screen" style="display: none;" role="main">
 
-         <a id="rules-btn"
+        <a id="rules-btn"
          href="https://www.uno-kartenspiel.de/spielregeln/"
          target="_blank"
          rel="noopener"
@@ -78,20 +78,19 @@
           <!-- Cards, draw pile, discard pile -->
 
           <!-- Der Uno Button ist oberhalb der Stapel-->
-            <button id="uno-btn" class="uno-centered" title="UNO rufen" aria-label="UNO rufen - Drücken wenn nur noch eine Karte übrig">UNO</button>
+            <button id="uno-btn" class="uno-centered" title="UNO rufen" aria-label="UNO rufen - Drücken wenn nur noch eine Karte übrig ist">UNO</button>
 
           <div id="center-area" role="region" aria-label="Kartenstapel">
             <button id="draw-pile" class="pile" title="Karte ziehen" aria-label="Nachziehstapel - Klicken zum Karte ziehen"></button>
             <div id="discard-pile" class="pile" title="Ablagestapel" role="img" aria-label="Ablagestapel - Zeigt die oberste Karte"></div>
             <div id="color-indicator" class="diamond" role="status" aria-label="Aktuelle Spielfarbe"></div>
 
-            <!-- Der Richtungsanzeiger -->
+            <!-- Aktueller Spieler + Richtungsanzeiger -->
             <div id="turn-info" aria-live="polite">
               <span id="active-player" aria-label="Aktueller Spieler"></span>
               <span id="direction" title="Spielrichtung" aria-label="Spielrichtung">↻</span>
             </div>
 
-            
           </div>
         </div>
 
@@ -99,6 +98,7 @@
       <div id="bottom-controls" role="toolbar" aria-label="Spielsteuerung">
         <button id="draw-btn" aria-label="Karte vom Stapel ziehen">Karte ziehen</button>
         <button id="new-game-btn" aria-label="Neues Spiel starten">Neues Spiel</button>
+
       </div>
 
     </div>

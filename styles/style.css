@@ -155,7 +155,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .player .info {
@@ -178,6 +178,7 @@ body {
 .player .hand {
   display: flex;
   flex-wrap: wrap;
+  padding: 10px;
   gap: 4px;
   justify-content: center;
   overflow: auto;
@@ -192,8 +193,8 @@ body {
 }
 
 .player .avatar {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
 }
@@ -203,7 +204,7 @@ body {
 /* Spielerpositionen: unten, links, oben, rechts - volle Breite/Höhe nutzen */
 #player1 {
   left: 50%;
-  bottom: 15px;
+  bottom: -60px;
   transform: translateX(-50%);
   max-width: calc(100% - 320px);
 }
@@ -226,7 +227,7 @@ body {
 
 #player2 .hand {
   display: grid;
-  grid-template-columns: repeat(2, 60px);
+  grid-template-columns: repeat(3, 60px);
   grid-auto-rows: 90px;
   gap: 4px;
   max-height: 380px; /* 4 Reihen sind sichtbar */
@@ -236,7 +237,7 @@ body {
 
 #player3 {
   left: 50%;
-  top: 15px;
+  top: -38px;
   transform: translateX(-50%);
   max-width: calc(100% - 320px);
 }
@@ -259,7 +260,7 @@ body {
 
 #player4 .hand {
   display: grid;
-  grid-template-columns: repeat(2, 60px);
+  grid-template-columns: repeat(3, 60px);
   grid-auto-rows: 90px;
   gap: 4px;
   max-height: 380px; /* 4 sichtbare Reihen */
@@ -424,7 +425,7 @@ button, #draw-btn {
 #bottom-controls { 
   position: absolute; 
   left: 50%; 
-  bottom: -6px; 
+  bottom: -64px; 
   transform: translate(-50%, 100%); 
   display: flex; 
   gap: 12px; }
@@ -456,7 +457,7 @@ button, #draw-btn {
 
 .uno-centered { 
   position: absolute; 
-  bottom: calc(100% + 20px); 
+  bottom: calc(100% + 45px); 
   left: 50%; 
   transform: translateX(-50%); 
   padding: 10px 20px; 
@@ -509,6 +510,7 @@ button, #draw-btn {
   text-decoration: none; 
   box-shadow: 0 4px 12px rgba(39, 186, 188, 0.4); }
 #rules-btn:hover { background: rgba(133, 224, 195, 0.65); }
+
 
 /* Farbauswahl-Modal (für Wild und die +4) */
 .modal {
@@ -929,31 +931,3 @@ button, #draw-btn {
   }
 }
 
-/* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
-  /* Larger touch targets */
-  .card.playable {
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  .modal .color {
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  #uno-btn,
-  #bottom-controls button {
-    min-height: 44px;
-    padding: 12px 20px;
-  }
-
-  /* Remove hover effects on touch */
-  .card.playable:hover {
-    transform: none;
-  }
-
-  .card.playable:active {
-    transform: scale(0.95);
-  }
-}
