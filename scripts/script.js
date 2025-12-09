@@ -445,12 +445,12 @@ async function applyUnoPenalty(playerName) {
     console.error("Fehler beim Ziehen der Strafkarten:", err);
   }
 
-  // Strafpunkte-Bild nach 5 Sekunden ausblenden
+  // Strafpunkte-Bild nach 3 Sekunden ausblenden
   setTimeout(() => {
     if (penaltyOverlay) {
       penaltyOverlay.style.display = "none";
     }
-  }, 5000);
+  }, 3000);
 }
 
 /**

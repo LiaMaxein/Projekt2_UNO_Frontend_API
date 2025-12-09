@@ -8,7 +8,7 @@ A multiplayer UNO card game built as a browser application with a Christmas them
 - **Christmas-themed avatars** (Santa, Grinch, Snowman, etc.)
 - **Sound effects EASTER EGG** - Click avatars for holiday sounds
 - **Flying card animations** for +2/+4 penalty cards
-- **UNO button** with 20-second timer and penalty system (should be only 10seconds)
+- **UNO button** with 20-second timer and  system (should be only 10seconds)
 - **Wild card color picker** via modal
 - **Responsive design** - Works on desktop, tablet, and mobile
 - **Snowfall EASTER EGG** - Click the turn indicator 
