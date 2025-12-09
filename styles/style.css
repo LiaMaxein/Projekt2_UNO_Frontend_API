@@ -448,7 +448,6 @@ button, #draw-btn {
   color: #063c35; }
 
 /* UNO Button Optik (leicht abgesetzt) + oberhalb der Center Area */
-/* ÜBERARBEITEN - -DARF NICHT MIT SPIELER 3 ÜBERLAPPEN */ 
 #uno-btn { 
   background: #ecc83a; 
   color: #690f0f; }
@@ -495,21 +494,32 @@ button, #draw-btn {
   animation: sparkle 0.6s ease;
 }
 
-/* Immer sichtbarer Hilfe/Regeln-Button 
-- ÜBERARBEITEN! sieht nicht gut aus und läuft noch nicht einwandfrei*/
+/* Immer sichtbarer Hilfe/Regeln-Button */
 #rules-btn { position: absolute; 
-  right: 8px;
-  top: 8px;
-  background: rgba(0,0,0,0.5); 
-  color: #fff; 
-  width: 28px; 
-  height: 28px; 
-  display: grid; 
-  place-items: center; 
-  border-radius: 50%; 
-  text-decoration: none; 
-  box-shadow: 0 4px 12px rgba(39, 186, 188, 0.4); }
-#rules-btn:hover { background: rgba(133, 224, 195, 0.65); }
+  right: 12px;
+  top: 12px; 
+  width: 32px;
+  z-index: 9999;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;     
+  border-radius: 10px;
+  border: none;
+  background: #7ad0ce;        
+  color: #063c35;
+  font-weight: 900;
+  font-size: 20px;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+#rules-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
 
 
 /* Farbauswahl-Modal (für Wild und die +4) */

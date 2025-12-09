@@ -1314,6 +1314,13 @@ function initializeApp() {
   colorIndicatorEl = document.getElementById("color-indicator");
   directionEl = document.getElementById("direction");
 
+  const rulesBtn = document.getElementById("rules-btn");
+  if (rulesBtn) {
+    rulesBtn.addEventListener("click", (e) => {
+      console.log("Regeln geöffnet");
+    })
+  }
+
   // Event-Handler registrieren
   if (startBtn) startBtn.addEventListener("click", onStartGame);
   if (drawBtn) drawBtn.addEventListener("click", onDrawCard);
