@@ -19,7 +19,7 @@ const AVATARS = [
 ];
 
 // UNO timer duration in milliseconds
-const UNO_TIMER_DURATION = 10000;
+const UNO_TIMER_DURATION = 8000;
 
 // -----------------------------------------------------------------------------
 // Game State
@@ -60,7 +60,6 @@ let drawPileEl, discardPileEl, colorIndicatorEl, directionEl;
 // =============================================================================
 // API Functions
 // =============================================================================
-
 /**
  * Startet ein neues Spiel auf dem Server
  * @param {string[]} names - Array mit 4 Spielernamen
@@ -299,7 +298,7 @@ function getTopCardImagePath(card, wildColor) {
 }
 
 /**
- * Weist jedem Spieler zufällig einen Avatar zu (benutzt den Fisher-Yates shuffle)
+ * Weist jedem Spieler zufällig einen Avatar zu (benutzt Fisher-Yates shuffle)
  */
 function assignAvatars() {
   const shuffled = shuffleArray([...AVATARS]);
@@ -345,7 +344,6 @@ function showCardEffectAlert(card) {
 // =============================================================================
 // UNO Button Logic
 // =============================================================================
-
 /**
  * Startet den UNO Timer wenn ein Spieler nur noch 2 Karten hat und eine spielt
  * Blockiert das Spiel während des Countdowns
@@ -353,7 +351,7 @@ function showCardEffectAlert(card) {
  * @param {string} nextPlayer - Der nächste Spieler nach dem UNO-Countdown
  */
 function startUnoTimer(playerName, nextPlayer) {
-  // Vorherigen Timer abbrechen falls vorhanden
+  // vorherigen Timer abbrechen falls vorhanden
   cancelUnoTimer();
 
   unoTimerActive = true;
@@ -362,9 +360,9 @@ function startUnoTimer(playerName, nextPlayer) {
   gameBlocked = true; // Spiel blockieren während UNO-Countdown
   pendingNextPlayer = nextPlayer; // Nächsten Spieler speichern
 
-  console.log(`UNO Timer gestartet für ${playerName} - 20 Sekunden. Spiel blockiert.`);
+  console.log(`UNO Timer gestartet für ${playerName} - 8 Sekunden. Spiel blockiert.`);
 
-  // Timer starten - nach 20 Sekunden Strafe
+  // Timer starten - nach 8 Sekunden Strafe
   // Hier wird eine sog. async IIFE genutzt
   unoTimerId = setTimeout(() => {
     // die Funktion wird direkt aufgerufen
@@ -418,7 +416,7 @@ function cancelUnoTimer() {
 
 /**
  * Wendet die UNO-Strafe an (2 Karten ziehen)
- * @param {string} playerName - Name des Spielers
+ * @param {string} playerName
  */
 async function applyUnoPenalty(playerName) {
   console.log(`UNO Strafe für ${playerName} - hat vergessen UNO zu rufen!`);
@@ -467,10 +465,9 @@ function checkNeedsUno(playerName) {
 // =============================================================================
 // Winner Modal
 // =============================================================================
-
 /**
  * Zeigt das Gewinner-Modal mit allen Spielern und Punkten
- * @param {string} winnerName - Name des Gewinners
+ * @param {string} winnerName
  */
 function showWinnerModal(winnerName) {
   const modal = document.getElementById("winner-modal");
@@ -522,7 +519,6 @@ function showWinnerModal(winnerName) {
 // =============================================================================
 // UI Rendering Functions
 // =============================================================================
-
 /**
  * Rendert den Nachziehstapel (Kartenrückseite)
  */
@@ -705,7 +701,6 @@ function renderAllPlayers() {
 // =============================================================================
 // Game Flow Functions
 // =============================================================================
-
 /**
  * Aktualisiert den gesamten Spielzustand vom Server
  */
@@ -791,12 +786,11 @@ function promptColorChoice() {
 // =============================================================================
 // Event Handlers
 // =============================================================================
-
 /**
  * Handler für Klick auf "Spiel starten"
  */
 async function onStartGame() {
-  // Namen aus Inputs sammeln
+  // Namen aus Eingabefeldern sammeln
   const names = [];
   for (let i = 1; i <= 4; i++) {
     const input = document.getElementById(`p${i}`);
@@ -998,7 +992,7 @@ async function onCardClick(playerName, cardIndex) {
     showCardEffectAlert(card);
 
     // Animation für Strafkarten (+2 oder +4) - Karten fliegen zum bestraften Spieler
-    // Der bestrafte Spieler ist der Spieler VOR nextPlayer (da nextPlayer der überspringende ist)
+    // Der bestrafte Spieler ist der Spieler VOR nextPlayer (da nextPlayer der zu Überspringende ist)
     if (card.Value === 10 || card.Value === 13) {
       const nextPlayerIdx = playerNames.indexOf(nextPlayer);
       // Bestrafter Spieler ist einer zurück von nextPlayer (entgegen Spielrichtung)
@@ -1020,7 +1014,7 @@ async function onCardClick(playerName, cardIndex) {
       currentPlayer = nextPlayer;
       console.log("currentPlayer gesetzt auf:", currentPlayer);
       await refreshGameState();
-      // renderAllPlayers() wird bereits in refreshGameState() aufgerufen
+      // renderAllPlayers() wird bereits in refreshGameState() aufgerufen!
     }
 
     // Bei Draw4: Verifiziere dass die Karte entfernt und +4 verteilt wurden
@@ -1123,7 +1117,6 @@ function animateInvalidMove(playerName, cardIndex) {
 // =============================================================================
 // Easter Eggs 
 // =============================================================================
-
 /**
  * Spielt einen Sound ab wenn auf einen Avatar geklickt wird
  * Grinch-Avatar spielt einen anderen Sound als alle anderen
@@ -1213,7 +1206,6 @@ function toggleSnowfall() {
 // =============================================================================
 // Card Dealing Animation
 // =============================================================================
-
 /**
  * Animiert eine fliegende Karte vom Nachziehstapel zu einem Spieler
  * @param {number} playerIdx - Index des Spielers (0-3)
@@ -1286,10 +1278,9 @@ async function animatePenaltyCards(targetPlayerIdx, cardCount) {
 // =============================================================================
 // Initialization
 // =============================================================================
-
 /**
  * Sets up event delegation for card clicks (prevents memory leaks)
- * Called once during initialization - no need to re-attach listeners
+ * Called once during initialization - no need to re-attach listeners!
  */
 function setupCardEventDelegation() {
   // Use event delegation on the board element for all card clicks
@@ -1316,7 +1307,6 @@ function setupCardEventDelegation() {
 /**
  * Animiert eine gespielte Karte vom Hand-Slot zum Ablagestapel.
  * Nutzt einen temporären, absolut positionierten Clone.
- *
  * @param {HTMLElement} sourceCardEl - Die Karten-DIV im Handcontainer
  * @returns {Promise<void>}
  */
@@ -1342,7 +1332,7 @@ function animatePlayedCardToDiscard(sourceCardEl) {
     clone.style.transition = "transform 0.35s ease-out, opacity 0.35s ease-out";
     document.body.appendChild(clone);
 
-    // Ziel-Delta berechnen (Mitte der Pile)
+    // Ziel-Delta berechnen (Mitte des Stapels)
     const deltaX = pileRect.left + pileRect.width / 2 - (cardRect.left + cardRect.width / 2);
     const deltaY = pileRect.top + pileRect.height / 2 - (cardRect.top + cardRect.height / 2);
 
