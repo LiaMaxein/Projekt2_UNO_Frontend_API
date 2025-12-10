@@ -929,7 +929,21 @@ async function onCardClick(playerName, cardIndex) {
     // Karte auf Server spielen
     const response = await playCardOnServer(card, wildColor);
     console.log("PlayCard Response:", response);
-
+    // Visuelle Animation: genau diese Karte fliegt zur Ablage
+    const playerIdx = playerNames.indexOf(playerName);
+    if (playerIdx !== -1) {
+      const playerEl = document.getElementById(PLAYER_POSITIONS[playerIdx]);
+      if (playerEl) {
+        const handContainer = playerEl.querySelector(".hand");
+        if (handContainer) {
+          const sourceCardEl = handContainer.querySelector(`.card[data-card-index="${cardIndex}"]`);
+          if (sourceCardEl) {
+            // Animation startet, während der Serverzustand gleich danach neu gerendert wird
+            animatePlayedCardToDiscard(sourceCardEl);
+          }
+        }
+      }
+    }
     // Nächsten Spieler ermitteln
     // Server gibt entweder NextPlayer oder Player zurück
     let nextPlayer = null;
@@ -1299,7 +1313,52 @@ function setupCardEventDelegation() {
     }
   });
 }
+/**
+ * Animiert eine gespielte Karte vom Hand-Slot zum Ablagestapel.
+ * Nutzt einen temporären, absolut positionierten Clone.
+ *
+ * @param {HTMLElement} sourceCardEl - Die Karten-DIV im Handcontainer
+ * @returns {Promise<void>}
+ */
+function animatePlayedCardToDiscard(sourceCardEl) {
+  return new Promise(resolve => {
+    if (!sourceCardEl) return resolve();
 
+    const discardPile = document.getElementById("discard-pile");
+    if (!discardPile) return resolve();
+
+    const cardRect = sourceCardEl.getBoundingClientRect();
+    const pileRect = discardPile.getBoundingClientRect();
+
+    // Clone erstellen
+    const clone = sourceCardEl.cloneNode(true);
+    clone.style.position = "fixed";
+    clone.style.left = `${cardRect.left}px`;
+    clone.style.top = `${cardRect.top}px`;
+    clone.style.margin = "0";
+    clone.style.zIndex = "1100";
+    clone.style.pointerEvents = "none";
+    clone.style.transform = "translate(0, 0)";
+    clone.style.transition = "transform 0.35s ease-out, opacity 0.35s ease-out";
+    document.body.appendChild(clone);
+
+    // Ziel-Delta berechnen (Mitte der Pile)
+    const deltaX = pileRect.left + pileRect.width / 2 - (cardRect.left + cardRect.width / 2);
+    const deltaY = pileRect.top + pileRect.height / 2 - (cardRect.top + cardRect.height / 2);
+
+    // Animation starten im nächsten Frame
+    requestAnimationFrame(() => {
+      clone.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.8) rotate(-6deg)`;
+      clone.style.opacity = "0.9";
+    });
+
+    // Nach der Animation Clone entfernen
+    setTimeout(() => {
+      clone.remove();
+      resolve();
+    }, 400);
+  });
+}
 /**
  * Initialisiert die Event-Handler und UI-Referenzen
  */
