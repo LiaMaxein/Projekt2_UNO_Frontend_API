@@ -1,4 +1,4 @@
-# 🎮 Anforderungen für das UNO-Spiel
+# 🎮 Anforderungen für das UNO-Spiel (seitens FH)
 
 ## 🔗 Backend & Vorbereitung
 
@@ -95,33 +95,35 @@ Bilder der Karten sind im Backend verfügbar.
 
 Das UNO-Spiel **muss**:
 
-- [ ] Die Eingabe von **vier Spielernamen** ermöglichen  
+- [✅] Die Eingabe von **vier Spielernamen** ermöglichen  
   - Keine doppelten oder leeren Namen
-- [ ] Ein neues Spiel über das Backend starten
-- [ ] Karten an alle Spieler austeilen (mit Kartenbildern)
-- [ ] Die **Spielernamen** neben den jeweiligen Karten anzeigen
-- [ ] Beim Klick auf eine Karte prüfen, ob sie **abgelegt** werden darf
-- [ ] Abgelegte Karten:
+- [✅] Ein neues Spiel über das Backend starten
+- [✅] Karten an alle Spieler austeilen (mit Animation)
+- [✅] Die **Spielernamen** neben den jeweiligen Karten anzeigen
+- [✅] Beim Klick auf eine Karte prüfen, ob sie **abgelegt** werden darf
+- [✅]Abgelegte Karten:
   - aus der Hand entfernen
   - zur **Top Card** auf dem Ablagestapel hinzufügen
-- [ ] **Karte ziehen** ermöglichen
-- [ ] **Punkte jedes Spielers** sichtbar machen (und nach jedem Zug aktualisieren)
-- [ ] Den **aktiven Spieler** visuell hervorheben
-- [ ] Die **Spielrichtung** (Uhrzeigersinn/Gegenuhrzeigersinn) anzeigen
-- [ ] Die **Top Card** als aufgedeckte Karte darstellen
-- [ ] Den **Abhebestapel** anzeigen
-- [ ] Eine **CSS-Animation** beim Ablegen einer Karte anzeigen
-- [ ] Eine **Animation bei ungültiger Aktion** anzeigen
-- [ ] Bei Spielende den **Gewinner/die Gewinnerin** hervorheben
-- [ ] Die **aktuell gewählte Farbe** darstellen (wichtig bei +4 oder Farbwahl)
-- [ ] **Keine unnötigen Serveranfragen** senden (z. B. Farbe und Nummer lokal prüfen)
-- [ ] Einen **Button für ein neues Spiel** enthalten
-- [ ] **Ungültige Spielzüge verhindern**
-- [ ] Einen **Link zu den Spielregeln** anzeigen
-- [ ] Eine **minimale Dokumentation** enthalten (z. B. Kommentare zu Funktionen):
+- [✅] **Karte ziehen** ermöglichen
+- [✅] **Punkte jedes Spielers** sichtbar machen (und nach jedem Zug aktualisieren)
+- [✅] Den **aktiven Spieler** visuell hervorheben
+- [✅] Die **Spielrichtung** (Uhrzeigersinn/Gegenuhrzeigersinn) anzeigen
+- [✅] Die **Top Card** als aufgedeckte Karte darstellen
+- [✅] Den **Abhebestapel** anzeigen
+- [✅] Eine **CSS-Animation** beim Ablegen einer Karte anzeigen
+- [✅] Eine **Animation bei ungültiger Aktion** anzeigen
+- [✅] Bei Spielende den **Gewinner/die Gewinnerin** hervorheben
+- [✅] Die **aktuell gewählte Farbe** darstellen (wichtig bei +4 oder Farbwahl)
+- [✅] **Keine unnötigen Serveranfragen** senden (z. B. Farbe und Nummer lokal prüfen)
+- [✅] Einen **Button für ein neues Spiel** enthalten
+- [✅] **Ungültige Spielzüge verhindern**
+- [✅] Einen **Link zu den Spielregeln** anzeigen
+- [✅] Eine **minimale Dokumentation** enthalten (z. B. Kommentare zu Funktionen):
   - Beispiel:  
     `// Diese Funktion prüft, ob eine Karte ablegbar ist`  
     `// Diese Funktion startet ein neues Spiel auf dem Server`
+
+ **Alle Anforderungen wurden erfüllt** ✅
 
 ---
 
@@ -129,52 +131,28 @@ Das UNO-Spiel **muss**:
 
 Das UNO-Spiel **kann zusätzlich**:
 
-- [ ] Ein **ansprechendes Design** (Themes, Animationen, Soundeffekte) haben
-- [ ] Die Möglichkeit bieten, **„UNO“ zu rufen**
+- [✅] Ein **ansprechendes Design** (Themes, Animationen, Soundeffekte) haben
+- [✅] Die Möglichkeit bieten, **„UNO“ zu rufen**
   - Wenn vergessen: automatisch 2 Karten ziehen
 - [ ] **Mehrere Runden** ermöglichen
-- [ ] **Themen-Designs** bieten (Weihnachten, Ostern, Halloween, etc.)
-- [ ] **Hintergrundanimationen** (z. B. Schneefall, Sternschnuppen, Blumenblühen)
-- [ ] **Soundeffekte** je nach Spielereignis (z. B. „Oh oh!“ bei +2)
+- [✅] **Themen-Designs** bieten (Weihnachten, Ostern, Halloween, etc.)
+- [✅] **Hintergrundanimationen** (z. B. Schneefall, Sternschnuppen, Blumenblühen)
+- [✅] **Soundeffekte** je nach Spielereignis (z. B. „Oh oh!“ bei +2)
 - [ ] **Charakterauswahl** beim Start (z. B. Weihnachtsmann, Grinch, Osterhase)
   - Mit spezifischen Geräuschen oder Animationen beim Gewinnen
 - [ ] **Wechselnde Hintergründe** oder **interaktive Effekte**  
   (z. B. Geschenke fliegen im Weihnachtsmodus)
-- [ ] Eine **schnelle und stabile Performance**, auch bei mehreren Spielern
+- [✅] Eine **schnelle und stabile Performance**
 
 ---
 
-## 🧠 Tipps zur Umsetzung
+## 🧠 Ideen zur Umsetzung
 
 - **Frontend:** HTML, CSS, JavaScript  
-- **Kommunikation mit Backend:** `fetch()` oder `axios`
+- **Kommunikation mit Backend:** `fetch()`
 - **Darstellung der Karten:** dynamisch mit DOM-Manipulation
 - **Animationsideen:** CSS-Transitions, `requestAnimationFrame()`, oder Canvas
 - **Themenwechsel:** dynamisch per CSS-Variablen oder Theme-Selector
 - **Audio:** HTML5 `<audio>` oder Web Audio API für Effekte
-
----
-
-## 🗂️ Beispielhafte Projektstruktur
-
-```
-/uno-game
-│
-├── index.html
-├── style.css
-├── script.js
-│
-├── /assets
-│   ├── /cards
-│   ├── /themes
-│   ├── /sounds
-│
-└── README.md
-```
-
----
-
-**Hinweis:**  
-Testen Sie API-Aufrufe in der **API-DEMO** des Backends und beobachten Sie die Requests im Browser-Netzwerk-Tab.
 
 ---

@@ -8,10 +8,12 @@ A multiplayer UNO card game built as a browser application with a Christmas them
 - **Christmas-themed avatars** (Santa, Grinch, Snowman, etc.)
 - **Sound effects EASTER EGG** - Click avatars for holiday sounds
 - **Flying card animations** for +2/+4 penalty cards
-- **UNO button** with 20-second timer and  system (should be only 10seconds)
+- **Flying card animations** for every card put on discard-pile
+- **UNO button** with 8-seconds timer (otherwise penalty for not calling UNO)
 - **Wild card color picker** via modal
 - **Responsive design** - Works on desktop, tablet, and mobile
-- **Snowfall EASTER EGG** - Click the turn indicator 
+- **Snowfall EASTER EGG** - Click the turn indicator
+- **Avatar Sound EASTER EGG** - Click the avatar
 
 ## Getting Started
 
@@ -36,7 +38,7 @@ No build tools required - this is a "vanilla" HTML/CSS/JavaScript application.
 3. The active player's cards are face-up
 4. Click a card to play it (if valid)
 5. Click the draw pile or "Karte ziehen" button to draw
-6. When you have 1 card left, press the UNO button within 20 seconds!
+6. When you have 1 card left, press the UNO button within 8 seconds!
 
 ## Project Structure
 
@@ -82,7 +84,6 @@ The game connects to: `https://nowaunoweb.azurewebsites.net`
 ## Accessibility
 
 - ARIA labels for screen readers
-- Keyboard navigable
 - High contrast colors
 - Responsive touch targets
 
